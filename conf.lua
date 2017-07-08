@@ -2,11 +2,11 @@ function love.conf(t)
     t.identity = nil                    
     t.version = "0.10.2"               
     t.console = true                   
-    t.accelerometerjoystick = true      
+    t.accelerometerjoystick = false      
     t.externalstorage = false            
     t.gammacorrect = false 
     --  
-    t.window.title = "Teste Menu"        
+    t.window.title = "Go Bananas"        
     t.window.icon = nil                 
     t.window.width = 800                
     t.window.height = 600               
@@ -14,7 +14,7 @@ function love.conf(t)
     t.window.resizable = true 
     t.window.minwidth = 800  
     t.window.minheight = 600  
-    t.window.fullscreen = false
+    t.window.fullscreen = true
     t.window.fullscreentype = "desktop"
     t.window.vsync = true         
     t.window.msaa = 0                   

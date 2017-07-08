@@ -45,15 +45,17 @@ function background.new(dt)
         -- local dy = math.random(0, love.graphics.getHeight())
         -- local imagemAleatoria = love.math.random(#imagens)
         -- local r = 
+        local imagem = imagens[categoriaImagem][love.math.random(#imagens[categoriaImagem])]
+        local y = 0 - imagem:getHeight()
 
         table.insert(cenas, 
             {
-            imagem = imagens[categoriaImagem][love.math.random(#imagens[categoriaImagem])], 
-            position = {
+            ['imagem'] = imagem, 
+            ['position'] = {
                 x = love.math.random(_G.width), 
-                y = 0
+                ['y'] = y
             },
-            rotation = math.rad(love.math.random(360))
+            ['rotation'] = math.rad(love.math.random(360))
             }
         )
 
@@ -68,12 +70,22 @@ function background.update(dt)
         cenas[i].position.y = cenas[i].position.y + 1
         cenas[i].rotation = cenas[i].rotation + math.rad(1)
   
-        if cenas[i].position.y > _G.height then
+        if cenas[i].position.y > _G.height + cenas[i].imagem:getHeight() then
             table.remove(cenas, i)
         end
     end
     
     delay = delay - dt
+end
+
+function background.mousemoved(x, y, dx, dy)
+    local moduloX = (x - dx) * 1e-3
+    local moduloY = (y - dy) * 1e-3
+
+    for i, _ in pairs(cenas) do
+        cenas[i].position.x = cenas[i].position.x + moduloX
+        cenas[i].position.y = cenas[i].position.y + moduloY
+    end
 end
 
 function background.show()

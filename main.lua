@@ -2,13 +2,18 @@ _G.width, _G.height, _G.flags = love.window.getMode()
 
 function love.load()
     -- body
+    require "whatIsVisible"
+    require "gap"
     require "font"
     require "screen_opening"
     require "menu"
+    require "map"
+    require "enemy"
+    
 
 
     sonds = {
-        ['abertura'] = love.audio.newSource('assets/audio/background/Foundation.mp3'),
+        ['abertura'] = love.audio.newSource('assets/audio/background/Zoom.mp3'),
         ['background'] = love.audio.newSource('assets/audio/background/You_Like_It.mp3'),
         ['click'] = love.audio.newSource('assets/audio/click.mp3', 'static'),
         love.audio.newSource('assets/audio/powerup.mp3'),
@@ -17,30 +22,47 @@ function love.load()
     }
 
     menu:load()
+    map.load()
+    ca:new("GO BANANAS", 300, 200)
+    -- text1:new("Um jogo de quiui studio", 100, 100)
 
     -- font = love.graphics.newFont('assets/fonts/Arkhip_font.ttf', 30)
 
-    love.graphics.setBackgroundColor(love.math.random(255), love.math.random(255), love.math.random(255))
+    -- love.graphics.setBackgroundColor(love.math.random(255), love.math.random(255), love.math.random(255))
 
 
     -- Valores defalt
-    menuAppear = false
-    screen_openingAppear = true
+    love.graphics.setBackgroundColor(button.setColor("orange"))
+
+    whatIsVisible.gap = true
+    delay = 0.5
+    -- whatIsVisible.menu = false
+    -- whatIsVisible.openScreen = false
+    buttonPressed = [[]]
+
 end
 
 function love.update(dt)
-    sonds.background:setVolume(0.7)
-    sonds.background:play()
+    -- sonds.background:setVolume(0.7)
+    -- sonds.background:play()
+    if whatIsVisible.gap then
+        ca:update(dt)
+        -- sonds.abertura:setVolume(0.2)
+        -- sonds.abertura:play()
 
-    menu:scene(dt)
+    else
 
-    background.new(dt)
-    background.update(dt)
+        menu:scene(dt)
 
-    if menuAppear then 
-        sonds.background:setVolume(0.2)
-        menu:update(dt) 
-    else start.update(dt) end
+        -- background.new(dt)
+        -- background.update(dt)
+
+        if whatIsVisible.menu then 
+            sonds.background:setVolume(0.2)
+            menu:update(dt) 
+        else start.update(dt) end
+
+    end
     
     _G.width, _G.height, _G.flags = love.window.getMode()
     -- love.audio.play(audio[2])
@@ -60,19 +82,27 @@ end
 
 function love.draw()
 
-    love.graphics.print(tostring(#buttonsOnClickEx), 10, 10)
-    background.show()
+    if whatIsVisible.gap then
+    
+    -- text1:show()
+    ca:show()
+    else
+    -- love.graphics.print(tostring(buttonPressed), 10, 10)
+    -- background.show()
+    map.show()
     -- button:show()
-    if screen_openingAppear then screen_start.show()
-
-    elseif menuAppear then menu:show() 
+    
+    if whatIsVisible.openScreen then screen_start.show()
+    elseif whatIsVisible.menu then menu:show() 
 
     else 
         start.show()
         -- cliques[1]()
-        
+  
     end
 
+    if whatIsVisible.userBar then userBarBotton:show() end
+end
     -- love.graphics.setColor(255, 255, 255, 50)
     -- love.graphics.rectangle('fill', math.abs(outroTexto:getWidth() - 100), math.abs(outroTexto:getHeight() - 100), (outroTexto:getWidth() + 15), (outroTexto:getHeight() + 10))
     
@@ -90,21 +120,27 @@ function love.mousepressed(x, y, key)
         -- love.graphics.setFont(font, 50)
         sonds.click:play()
 
-        if menuAppear then menu:mousepressed(x, y, key) else --[[table.insert(cliques, start.new(x, y))]] end
+        if whatIsVisible.menu then menu:mousepressed(x, y, key) else --[[table.insert(cliques, start.new(x, y))]] end
 end
 
 function love.mousemoved(x, y, dx, dy, istouch)
     -- button:houver(x, y)
+    -- background.mousemoved(x, y, dx, dy)
 end
 
 function love.keypressed(key, scancode, isrepeat)
-    if key and screen_openingAppear and not menuAppear then
-        menuAppear = true; 
-        screen_openingAppear = false
+    buttonPressed = key
+
+    if key and whatIsVisible.openScreen and not whatIsVisible.menu then
+        whatIsVisible.menu = true; 
+        whatIsVisible.menuButtons = true;
+        whatIsVisible.openScreen = false;
 
     end
-    if key == 'escape' then menuAppear = true end
 
-    if key == 'space'then love.timer.sleep(5) end
-    -- if key == 'space' and isrepeat then menuAppear = false end
+    if whatIsVisible.start then map.keypressed(key, scancode, isrepeat); menu:keypressed(key, scancode, isrepeat) end
+    -- if key == 'escape' then whatIsVisible.menu = true end
+
+    if key == 'space' and not whatIsVisible.menu then whatIsVisible.menu = false; whatIsVisible.userBar = false end
+    -- if key == 'space' and isrepeat then whatIsVisible.menu = false end
 end

@@ -2,6 +2,7 @@
 require "buttons"
 require "background_menu"
 require "start"
+require "weapons"
 
 -- Variáveis Globais
 menu = {}
@@ -11,33 +12,52 @@ menu = {}
 function menu:load()
     
 
-    button:new('Início', 'left', function() menu.appear(true, 0.1) end, 'defalt')
-    button:new('Opções', 'left', function() menu.appear(true, 0.1) end, 'defalt')
-    button:new('Sobre', 'left', function() menu.appear(true, 0.1) end)
-    -- button:new('Conquistas', 'center', function() return true end)
-    button:new('Sair', 'left', 
+    buttons:new('Início', 'left', function() whatIsVisible.menuButtons = false; whatIsVisible.start = true end, 'orange', ui.play, false)
+    buttons:new('Opções', 'left', function() menu.appear(true, 0.1) end, 'roxo', ui.stop, true)
+    buttons:new('Personalizar', 'left', function() menu.appear(true, 0.1) end, "green", nil, true)
+    buttons:new("Restart", "left", function() map.load(); enemys:destroy() end, "blue", love.graphics.newImage("assets/png/ui/png/replay.png"), false)
+    -- button:new('Controles', 'left', function() return true end)
+    buttons:new('Sair', 'left', 
         function() 
-            menuAppear = false
+            whatIsVisible.menu = false
             
-            love.timer.sleep(1)
+            -- love.timer.sleep(1)
             love.event.quit() 
 
-        end)
+        end, 'red', nil, false)
 
     -- background.load()
+
+    userBarBotton:new(nil, "001-man", 0, 0, nil, function() return end)
+    userBarBotton:new("STEVE", nil, 0, 0, "white", function() return end)
+    userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end)
+    userBarBotton:new("PAUSE", nil, 0, 0, "white", function() whatIsVisible.menuButtons = true; whatIsVisible.start = false end)
+    
+    -- userBarBotton:new("Clique em configurações", "001-mouse")
+    -- userBarBotton:new("Buscar", "locked")
 end
 
 function menu:update(dt)
 
-    button:houver(love.mouse.getPosition())
-    button:update(dt)
+    userBarBotton:houver(love.mouse.getPosition())
+    
+    if whatIsVisible.menuButtons then
+        button:houver(love.mouse.getPosition())
+        buttons:update(dt)
+    end
 
+    if whatIsVisible.start then 
+        map.update(dt) 
+    end
 
 
 end
 
 function menu:mousepressed(x, y, key)
-    button:onClick(x, y, key)
+    userBarBotton:onClick(x, y)
+    
+    if whatIsVisible.menuButtons then button:onClick(x, y, key) end
+    if whatIsVisible.start then weapons.new(choose or "axe", x, y) end
 end
 
 function menu:scene(dt)
@@ -48,17 +68,31 @@ function menu:scene(dt)
 
 end
 
+function menu:keypressed(key)
+    if key == "1" then choose = "hammer" 
+    elseif key == "2" then choose = "axe" end
+end
+
 function menu:show()
     -- A ordem Importa!
     -- love.graphics.print(tostring(_G.width), 10, 10)
     for index, value in pairs(buttonsOnClickEx) do
         -- Exibi o effeito quando um botão é clicado
-        value()
+        -- value()
         
         if value() == false then table.remove(buttonsOnClickEx, index) end
     end
-
-    button:show()
+    
+    userBarBotton:show()
+    
+    if whatIsVisible.menuButtons then 
+        buttons:show()
+    else
+        -- userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end) 
+        
+    end
+    weapons.show()
+    life.show()
 end
 
 function menu.appear(boolean, dl)

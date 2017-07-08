@@ -14,9 +14,9 @@ end
 
 
 function start.update(dt)
-    for index, value in pairs(cliques) do
-        if value() == false then table.remove(cliques, index) end
-    end
+    -- for index, value in pairs(cliques) do
+    --     if value() == false then table.remove(cliques, index) end
+    -- end
 end
 
 function start.new(dt, x, y)
@@ -47,6 +47,6 @@ end
 
 function start.show()
     for _, value in pairs(cliques) do
-        value()
+        if value() == false then table.remove(cliques, index) end
     end
 end
