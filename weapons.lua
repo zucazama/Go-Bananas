@@ -2,6 +2,7 @@ weapons = {}
 weapons.__index = weapons
 
 bullet = {}
+
 local cont = 1
 local imageWeapons  = {
         ['axe'] = love.graphics.newImage("assets/png/axe.png"),
@@ -51,7 +52,7 @@ end
 function weapons.collider(a, b)
     userData_ = {}
 
-    if a:getUserData() == "enemy" then
+    if a:getUserData() == "enemy" --[[or a:getUserData() == "enemyBoss"]] then
         userData_.body_A = a:getBody():getUserData()
         userData_.body_B = b:getBody():getUserData()
     else
@@ -60,8 +61,11 @@ function weapons.collider(a, b)
     end   
 
     print(userData_.body_B)
-    print(cont)
     life.lost(bullet[userData_.body_B].damage, a:getBody():getPosition())
+
+    -- print(userData_.body_B)
+    -- print(cont)
+    -- enemys[userData_.body_B]['func'] = enemys:effectScale(userData_.body_B, 0.5)
 
     if (enemys[userData_.body_A].life_number + bullet[userData_.body_B].damage) <= 0 then 
         enemys[userData_.body_A].body:destroy()
@@ -78,8 +82,8 @@ function weapons.collider(a, b)
     -- table.remove(bullet, userData_.body_B)
 
 
-
- --[[       -- text = text .. "\n" .. a:getUserData() .. " colliding with " .. b:getUserData()
+--[[       
+     -- text = text .. "\n" .. a:getUserData() .. " colliding with " .. b:getUserData()
 
         life.lost(bullet[userData_.body_B].damage, a:getBody():getPosition())
 
@@ -95,5 +99,5 @@ function weapons.collider(a, b)
         -- b:getBody():destroy()
         -- b:destroy()
         -- bullet[userData_.body_B] = nil
-]]
+--]]
 end

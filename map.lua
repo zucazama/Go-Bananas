@@ -1,4 +1,6 @@
 map = {}
+    local delay = 0.2
+    local delay1 = 10
 
 local background = love.graphics.newImage("bg.png")
 local plataform = love.graphics.newImage("plataform.png")
@@ -20,12 +22,11 @@ function map.load()
 
             if userData_A == "enemy" and userData_B == "enemy" then
                 return false
-            elseif userData_A == "steve" and userData_B == "axe" --[[or ( userData_A == "axe" or userData_A == "hammer" and userData_B == "steve")]] then
+            elseif userData_A == "steve" and userData_B == "axe" or ( userData_A == "axe" and userData_B == "steve") then
                 return false
-
-            elseif userData_A == "steve" and userData_B == "hammer" then
+            elseif userData_A == "steve" and userData_B == "hammer" or (userData_A == "hammer" and userData_B == "steve") then
                 return false
-            elseif userData_A == "ground" and userData_B == "axe"  --[[or ( userData_A == "axe" or userData_A == "hammer" and userData_B == "ground")]] then
+            elseif userData_A == "ground" and userData_B == "axe"  or ( userData_A == "axe" and userData_B == "ground") then
                 return false
             elseif userData_A == "ground" and userData_B == "hammer" then
                 return false
@@ -35,12 +36,11 @@ function map.load()
         end
     )
 
-    local delay = 0.2
 
 
     objetos = {}
     objetos.ground = {}
-    objetos.ground.body = love.physics.newBody(world, _G.width - 100, _G.height, "static")
+    objetos.ground.body = love.physics.newBody(world, _G.width/2, _G.height, "static")
     objetos.ground.shape = love.physics.newRectangleShape(_G.width, 100)
     objetos.ground.fixture = love.physics.newFixture(objetos.ground.body, objetos.ground.shape) 
     objetos.ground.fixture:setUserData("ground")
@@ -64,9 +64,9 @@ function map.load()
     -- love.graphics.setBackgroundColor(105, 136, 258)
     --love.window.setMode(650, 650)
 
-    text = ""   -- we'll use this to put info text on the screen later
-    persisting = 0    -- we'll use this to store the state of repeated callback calls
-    bodyContactA, bodyContactB = "" , ""
+    -- text = ""   -- we'll use this to put info text on the screen later
+    -- persisting = 0    -- we'll use this to store the state of repeated callback calls
+    -- bodyContactA, bodyContactB = "" , ""
 end 
 
 function map.update(dt)
@@ -78,9 +78,16 @@ function map.update(dt)
             enemy.new()
             delay = 0.5
         end
+        if delay1 <= 0 then
+            enemy.newBoss()
+            delay1 = 10
+        end
 
         delay = delay - dt
+        delay1 = delay1 - dt
     end
+
+    -- enemys:update(dt)
 --[[
     contacts = world:getContactList()
     do
@@ -97,15 +104,15 @@ function map.update(dt)
 --]]
     --here we are going to create some keyboard events
        if love.keyboard.isDown("d") then --press the right arrow key to push the ball to the right
-        -- objetos.steve.body:applyForce(400, 0)
+        objetos.steve.body:applyForce(100, 0)
         -- objetos.steve.body:applyLinearImpulse(100, 0)
-        objetos.steve.body:setLinearVelocity(200, 0)
+        -- objetos.steve.body:setLinearVelocity(200, 0)
         -- objetos.steve.body:applyAngularImpulse(10)
     end
     if love.keyboard.isDown("a") then --press the left arrow key to push the ball to the left
-        -- objetos.steve.body:applyForce(-400, 0)
+        objetos.steve.body:applyForce(-100, 0)
         -- objetos.steve.body:applyLinearImpulse(-100, 0)
-        objetos.steve.body:setLinearVelocity(-200, 0)
+        -- objetos.steve.body:setLinearVelocity(-200, 0)
         -- objetos.steve.body:applyAngularImpulse(-10)
         -- objetos.steve.body:setAngularVelocity(math.rad(1))
     end
@@ -154,7 +161,7 @@ function map.show()
     
     love.graphics.draw(objetos.steve.image, objetos.steve.body:getX(), objetos.steve.body:getY(), objetos.steve.body:getAngle(), 1, 1)
 
-    love.graphics.print(text, 10, 10)
+    -- love.graphics.print(text, 10, 10)
     -- love.graphics.print(bodyContactA, 100, 10)
     
 end
@@ -187,21 +194,36 @@ function beginContact(a, b, coll)
     local index_B = (b:getBody():getUserData())
     -- text = text .. "\n" .. a:getUserData() .. " colliding with " .. b:getUserData()
     
-    if userData_Fixture_A == "ground" and userData_Fixture_B == "enemy" then
-        
+    if userData_Fixture_A == "ground" and userData_Fixture_B == "enemy" or (userData_Fixture_A == "enemy" and userData_Fixture_B == "ground") then
         -- table.remove(enemys, tonumber(b:getBody():getUserData()))
-        b:destroy()
         -- b:getBody():destroy()
-        enemys[index_B] = nil
         -- isTouchingTheGround = true
+        if userData_Fixture_A == "enemy" then 
+            a:destroy()
+            enemys[index_A] = nil
+        else
+            b:destroy()
+            enemys[index_B] = nil
+        end
+
+
     elseif (userData_Fixture_A == "steve" and userData_Fixture_B == "enemy") or (userData_Fixture_A == "enemy" and userData_Fixture_B == "steve") then
+
         contactSteve:play()
         enemy.collider(a, b)
-    elseif (userData_Fixture_A == "enemy" and userData_Fixture_B == "axe") or (userData_Fixture_A == "axe" and userData_Fixture_B == "enemy") then
+
+    elseif (userData_Fixture_A == "steve" and userData_Fixture_B == "enemyBoss") or 
+            (userData_Fixture_A == "enemyBoss" and userData_Fixture_B == "steve") then
+        -- print("qui", userData_Fixture_A, userData_Fixture_B)
+        contactSteve:play()
+        enemy.collider(a, b)
+
+    elseif (userData_Fixture_A == "enemy" or userData_Fixture_A == "enemyBoss" and userData_Fixture_B == "axe") or (userData_Fixture_A == "axe" and userData_Fixture_B == "enemy" or userData_Fixture_B == "enemyBoss") then
         contactSound:play()
-        -- text = text .. "\n" .. a:getUserData() .. " colliding with " .. b:getUserData()
         weapons.collider(a, b)
+        -- text = text .. "\n" .. a:getUserData() .. " colliding with " .. b:getUserData()
         -- isTouchingTheGround = false
+
     elseif (userData_Fixture_A == "enemy" and userData_Fixture_B == "hammer") or (userData_Fixture_A == "hammer" and userData_Fixture_B == "enemy") then
         contactSound:play()
         weapons.collider(a, b)
@@ -214,13 +236,14 @@ function endContact(a, b, coll)
 end
  
 function preSolve(a, b, coll)
-    if persisting == 0 then    -- only say when they first start touching
+   --[[ if persisting == 0 then    -- only say when they first start touching
         -- text = 'preSolve'
         -- text = text.."\n"..a:getUserData().." touching "..b:getUserData()
     elseif persisting < 20 then    -- then just start counting
         -- text = text.." "..persisting
     end
     persisting = persisting + 1    -- keep track of how many updates they've been touching for
+--]]
 end
  
 function postSolve(a, b, coll, normalimpulse, tangentimpulse)

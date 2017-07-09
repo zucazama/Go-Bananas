@@ -3,6 +3,7 @@ require "buttons"
 require "background_menu"
 require "start"
 require "weapons"
+require "weaponsScreen"
 
 -- Variáveis Globais
 menu = {}
@@ -33,6 +34,10 @@ function menu:load()
     userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end)
     userBarBotton:new("PAUSE", nil, 0, 0, "white", function() whatIsVisible.menuButtons = true; whatIsVisible.start = false end)
     
+
+     weaponsScreen.new(love.graphics.newImage("axe.png"), "1", true)
+     weaponsScreen.new(love.graphics.newImage("axe.png"), "2", false)
+    --  weaponsScreen.new(love.graphics.newImage("axe.png"), "01", "AXE")
     -- userBarBotton:new("Clique em configurações", "001-mouse")
     -- userBarBotton:new("Buscar", "locked")
 end
@@ -69,8 +74,16 @@ function menu:scene(dt)
 end
 
 function menu:keypressed(key)
-    if key == "1" then choose = "hammer" 
-    elseif key == "2" then choose = "axe" end
+    if key == "1" then 
+        choose = "axe" 
+        weaponsScreen_List[1].select = true
+        weaponsScreen_List[2].select = false
+        
+    elseif key == "2" then 
+        choose = "hammer"
+        weaponsScreen_List[2].select = true
+        weaponsScreen_List[1].select = false
+    end
 end
 
 function menu:show()
@@ -80,7 +93,7 @@ function menu:show()
         -- Exibi o effeito quando um botão é clicado
         -- value()
         
-        if value() == false then table.remove(buttonsOnClickEx, index) end
+        -- if value() == false then table.remove(buttonsOnClickEx, index) end
     end
     
     userBarBotton:show()
@@ -91,6 +104,11 @@ function menu:show()
         -- userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end) 
         
     end
+
+    if whatIsVisible.start then
+        weaponsScreen.show()
+    end
+    
     weapons.show()
     life.show()
 end
