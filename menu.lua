@@ -1,9 +1,7 @@
 
 require "buttons"
-require "background_menu"
-require "start"
-require "weapons"
-require "weaponsScreen"
+require "winOrLose"
+require "scoreGame"
 
 -- Variáveis Globais
 menu = {}
@@ -12,40 +10,38 @@ menu = {}
 
 function menu:load()
     
-
-    buttons:new('Início', 'left', function() whatIsVisible.menuButtons = false; whatIsVisible.start = true end, 'orange', ui.play, false)
-    buttons:new('Opções', 'left', function() menu.appear(true, 0.1) end, 'roxo', ui.stop, true)
-    buttons:new('Personalizar', 'left', function() menu.appear(true, 0.1) end, "green", nil, true)
-    buttons:new("Restart", "left", function() map.load(); enemys:destroy() end, "blue", love.graphics.newImage("assets/png/ui/png/replay.png"), false)
-    -- button:new('Controles', 'left', function() return true end)
-    buttons:new('Sair', 'left', 
+    buttons:new('INÍCIO', 'left', function() whatIsVisible.menuButtons = false; whatIsVisible.start = true; whatIsVisible.score = true; --[[steve.load()]] end, 'orange', ui.image.play, false)
+    buttons:new("RECOMEÇAR", "left", function() restart() end, "blue", ui.image.refresh, false)
+    buttons:new('SAIR', 'left', 
         function() 
             whatIsVisible.menu = false
-            
-            -- love.timer.sleep(1)
-            love.event.quit() 
+            love.event.quit()       
+        end, 'red', ui.image.stop, false)
+    -- buttons:new('Opções', 'left', function() menu.appear(true, 0.1) end, 'roxo', ui.image.stop, true)
+    -- buttons:new('Personalizar', 'left', function() menu.appear(true, 0.1) end, "green", nil, true)
+    -- button:new('Controles', 'left', function() return true end)
 
-        end, 'red', nil, false)
+    winOrLoseButtons:newButton("RECOMEÇAR", ui.image.refresh, function() restart(); whatIsVisible.winOrLose = false; whatIsVisible.score = true; whatIsVisible.userBar = true; end, "blue", 2)
+    winOrLoseButtons:newButton("SAIR", ui.image.stop, function() whatIsVisible.menu = false;  love.event.quit() end, "red", 2)
 
-    -- background.load()
-
-    userBarBotton:new(nil, "001-man", 0, 0, nil, function() return end)
+    userBarBotton:new(nil, ui.image.monkey, 0, 0, nil, function() return end)
     userBarBotton:new("STEVE", nil, 0, 0, "white", function() return end)
-    userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end)
-    userBarBotton:new("PAUSE", nil, 0, 0, "white", function() whatIsVisible.menuButtons = true; whatIsVisible.start = false end)
+    userBarBotton:new(nil, ui.image.speaker, 0, 0, nil, 
+        function() 
+            if ui.sound.abertura:isPlaying() then
+                ui.sound.abertura:pause()
+                return
+            end
+            ui.sound.abertura:play() 
+        end
+    )
+    userBarBotton:new(nil, ui.image.pause, 0, 0, nil, function() whatIsVisible.menuButtons = true; whatIsVisible.start = false; whatIsVisible.score = false end)
     
 
-     weaponsScreen.new(love.graphics.newImage("axe.png"), "1", true)
-     weaponsScreen.new(love.graphics.newImage("axe.png"), "2", false)
-    --  weaponsScreen.new(love.graphics.newImage("axe.png"), "01", "AXE")
-    -- userBarBotton:new("Clique em configurações", "001-mouse")
-    -- userBarBotton:new("Buscar", "locked")
 end
 
 function menu:update(dt)
 
-    userBarBotton:houver(love.mouse.getPosition())
-    
     if whatIsVisible.menuButtons then
         button:houver(love.mouse.getPosition())
         buttons:update(dt)
@@ -55,68 +51,54 @@ function menu:update(dt)
         map.update(dt) 
     end
 
+    if whatIsVisible.userBar then
+        userBarBotton:houver(love.mouse.getPosition())
+    end
+
+    if whatIsVisible.winOrLose then
+        winOrLoseButtons:buttonHouver(love.mouse.getPosition())
+    end
+
 
 end
 
 function menu:mousepressed(x, y, key)
-    userBarBotton:onClick(x, y)
+    if whatIsVisible.userBar then
+        userBarBotton:onClick(x, y)
+    end
     
-    if whatIsVisible.menuButtons then button:onClick(x, y, key) end
-    if whatIsVisible.start then weapons.new(choose or "axe", x, y) end
+    if whatIsVisible.menuButtons then button:onClick(x, y, key)
+    elseif not whatIsVisible.winOrLose then map.mousepressed(x, y, key); end
+    
+    if whatIsVisible.winOrLose then winOrLoseButtons:onClick(x, y, key) end
+    -- if whatIsVisible.start then weapons.new(choose or "axe", x, y) end
 end
 
 function menu:scene(dt)
-    -- love.audio.play(audio[2])
-    -- sonds[4]:setVolume(0.9)
-    -- sonds[4]:play()
-
-
 end
 
 function menu:keypressed(key)
-    if key == "1" then 
-        choose = "axe" 
-        weaponsScreen_List[1].select = true
-        weaponsScreen_List[2].select = false
-        
-    elseif key == "2" then 
-        choose = "hammer"
-        weaponsScreen_List[2].select = true
-        weaponsScreen_List[1].select = false
-    end
 end
 
 function menu:show()
     -- A ordem Importa!
-    -- love.graphics.print(tostring(_G.width), 10, 10)
-    for index, value in pairs(buttonsOnClickEx) do
-        -- Exibi o effeito quando um botão é clicado
-        -- value()
-        
-        -- if value() == false then table.remove(buttonsOnClickEx, index) end
-    end
+    life.show()
+
     
-    userBarBotton:show()
+    if whatIsVisible.userBar then
+        userBarBotton:show()
+    end
     
     if whatIsVisible.menuButtons then 
-        buttons:show()
-    else
-        -- userBarBotton:new(nil, "speaker-1", 0, 0, nil, function() sonds.abertura:play() end) 
-        
+        buttons:show()        
     end
 
-    if whatIsVisible.start then
-        weaponsScreen.show()
+    if whatIsVisible.start then end
+    if whatIsVisible.score then score.show() end
+
+    if whatIsVisible.winOrLose then
+        winOrLose.show(chooseFrases)
+        winOrLoseButtons:showButtons()
     end
     
-    weapons.show()
-    life.show()
-end
-
-function menu.appear(boolean, dl)
-    if boolean then 
-        if delay == 0 then 
-            menuAppear = false
-        end
-    end
 end

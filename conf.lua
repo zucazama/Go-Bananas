@@ -11,11 +11,11 @@ function love.conf(t)
     t.window.width = 800                
     t.window.height = 600               
     t.window.borderless = false         
-    t.window.resizable = true 
-    t.window.minwidth = 800  
-    t.window.minheight = 600  
+    t.window.resizable = false 
+    t.window.minwidth = 1000  
+    t.window.minheight = 800  
     t.window.fullscreen = true
-    t.window.fullscreentype = "desktop"
+    t.window.fullscreentype = "desktop" -- "desktop" ou "exclusive"
     t.window.vsync = true         
     t.window.msaa = 0                   
     t.window.display = 1                

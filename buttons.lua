@@ -11,11 +11,7 @@ buttonsOnClickEx = {}
 
 local margens = 40
 
-ui = { 
-    ['locked'] = love.graphics.newImage("assets/png/ui/png/locked.png"),
-    ['play'] = love.graphics.newImage("assets/png/ui/png/play-button.png"),
-    ['stop'] = love.graphics.newImage("assets/png/ui/png/stop.png"),
-}
+
 
 function button.setColor(name)
     local color = {
@@ -43,50 +39,40 @@ end
 function button:new(text, align, func, color, icon, isLocked)
 
     
-        -- self.title = love.graphics.newText(font, text)
-        local title = love.graphics.newText(font.mullerNarrow.light.size[30], text)
+    local title = love.graphics.newText(font.mullerNarrow.extraBold.size['30'], text)
         
-        -- local icon = love.graphics.newImage("assets/png/ui/png/001-stop.png")
+    -- local position = {
+    --     ['x'] = #self ~= 0 and self[#self].rectangle.position.x + self[#self].rectangle.size.width + margens - 10 or 60,
+    --     ['y'] = height/2 - 100
+    -- }
+
+    local image = {
+        ['icon'] = icon or love.graphics.newImage("assets/png/ui/png/pause.png"),
+    }
         
-        local position = {
-            x = #self ~= 0 and self[#self].rectangle.position.x + self[#self].rectangle.size.width + margens - 10 or 60,
-            -- y = title:getHeight() + margens + (70 * (2 + #buttons))
-            y = height/2 - 100
-        }
+    local rectangle = { 
+        ['position'] = {
+            x = #self ~= 0 and self[#self].rectangle.position.x + self[#self].rectangle.size.width + margens/2 or 60,
+            y = _G.height/2 - 100
+        },
+        ['size'] = {
+            ['width'] = title:getWidth() < image.icon:getWidth() and image.icon:getWidth() + margens or title:getWidth() + margens + 20,
+            -- height = title:getHeight() + margens
+            ['height'] = 250
+        },
+    }
 
-        local image = {
-            ['icon'] = icon or love.graphics.newImage("assets/png/ui/png/pause.png"),
-        }
-        
+    local position = {
+            ['x'] = rectangle.position.x + (math.abs(rectangle.size.width - title:getWidth())/2) + title:getWidth()/2,
+            ['y'] = rectangle.position.y + (title:getHeight() + margens/2)/2
+    }
 
---[[		
-        if align == 'left' then 
-            position.x = width/14 
-        elseif align == 'center' then 
-            position.x = width/2 - title:getWidth()/2 
-        elseif align == 'right' then 
-            position.x = width - (width/14) - title:getWidth() 
-        end
---]]
-        
-        local rectangle = { 
-            position = {
-                x = math.abs(position.x - (margens/2)),
-                y = math.abs(position.y - (margens/2))
-            },
-            size = {
-                width = image.icon:getWidth() + margens,
-                -- height = title:getHeight() + margens
-                height = 300
-            }
-        }
-
-
-            image['position'] = {
-                ['x'] = rectangle.position.x + math.abs((image.icon:getWidth() - rectangle.size.width)/2),  
-                ['y'] = rectangle.position.y + math.abs((image.icon:getHeight() - rectangle.size.height)/2),
-            }
+    image['position'] = {
+        ['x'] = rectangle.position.x + math.abs((image.icon:getWidth() - rectangle.size.width)/2),  
+        ['y'] = (rectangle.position.y + title:getHeight() + margens/2 )+ math.abs((image.icon:getHeight() - (rectangle.size.height - (title:getHeight() + margens/2)))/2),
+    }
     
+
     table.insert(self, setmetatable(
         {
         ['label'] = text,
@@ -106,52 +92,18 @@ function button:new(text, align, func, color, icon, isLocked)
 end
 
 function button:update()
---[[
-    for i, _ in pairs(self) do
-    
-	    if self[i].align == 'left' then 
-            self[i].position.x = _G.width/14 
-        elseif self[i].align == 'center' then 
-            self[i].position.x = _G.width/2 - buttons[i].title:getWidth()/2 
-        elseif self[i].align == 'right' then 
-            self[i].position.x = _G.width - (_G.width/14) - buttons[i].title:getWidth() 
-        end
-
-        self[i].rectangle.position.x = self[i].position.x - margens/2
-    end
---]]
 end
 
 function button:setFont(index, sizeFont, ...)
-    -- local nameFont = table.concat( {...}, ".")
-
-    self.title:setFont(font.mullerNarrow.light.size[sizeFont])
-
-    -- self.rectangle.size.width = self.title:getWidth() + margens
-    -- self.rectangle.size.height = self.title:getHeight() + margens
---[[
-    -- while (buttons[1].rectangle.position.x + buttons[1].rectangle.size.width) > 0 do
-        for i = (index + 1), #buttons do
-            -- self.position.x = margens
-            
-            buttons[i].position.y = buttons[(i - 1) > 0 and (i - 1) or i].title:getHeight() + margens + (20 + buttons[(i - 1) > 0 and (i - 1) or i].position.y)
-            
-            buttons[i].rectangle.position.y = math.abs(buttons[i].position.y - (margens/2))
-            
-            -- self.rectangle.position.x = math.abs(self.position.x - (margens/2))
-            -- buttons[i].position.x = buttons[i].position.x - 1
-            -- buttons[i].rectangle.position.x = buttons[i].rectangle.position.x - 1
-        end
-        -- end
---]]
+    self.title:setFont(font.mullerNarrow.extraBold.size[tostring(sizeFont)])
 end
 
 function userBar:new(text, icon, mx, my, color, action)
     -- Fica no rodapé da tela
 
     if icon then
-        image = { ['image'] = love.graphics.newImage("assets/png/ui/png/" .. icon .. '.png')}
-        -- local label = { ['text'] = love.graphics.newText(font.mullerNarrow.light.size[15], text or "")}
+        image = { ['image'] = icon}
+        -- local label = { ['text'] = love.graphics.newText(font.mullerNarrow.light.size['15'], text or "")}
 
         box = {
             ['position'] = {
@@ -159,7 +111,7 @@ function userBar:new(text, icon, mx, my, color, action)
                 ['y'] = 60
             }
         }
-        print(box.position.x)
+        -- print(box.position.x)
         image.position = {
             ['x'] = box.position.x + margens/2,
             ['y'] = box.position.y + (math.abs(40 - image.image:getHeight())/2),
@@ -179,7 +131,7 @@ function userBar:new(text, icon, mx, my, color, action)
     
     elseif text then 
         image = nil
-        label = { ['text'] = love.graphics.newText(font.mullerNarrow.light.size[15], text)}
+        label = { ['text'] = love.graphics.newText(font.mullerNarrow.light.size['15'], text)}
 
 
         box = {
@@ -254,18 +206,25 @@ function button:show()
             -- love.graphics.draw(self.title, self.position.x, self.position.y)
             -- love.graphics.print(tostring(buttons[i].color[2]), buttons[i].rectangle.position.x - 30, buttons[i].rectangle.position.y)
         --    love.graphics.polygon('fill', 50, 50, 100, 50, 75, 100)
+            
             -- Sombra
             love.graphics.setColor(0, 0, 0, 10)
             love.graphics.rectangle('fill', self[i].rectangle.position.x - 2, self[i].rectangle.position.y - 2, self[i].rectangle.size.width + 4, self[i].rectangle.size.height + 4)
 
-            love.graphics.setColor(button.setColor(self[i].color.defalt))
+            love.graphics.setColor(0, 0, 0, 40)
             love.graphics.rectangle('fill', self[i].rectangle.position.x, self[i].rectangle.position.y, self[i].rectangle.size.width, self[i].rectangle.size.height)
             
+            love.graphics.setColor(button.setColor(self[i].color.defalt))
+            love.graphics.rectangle("fill", self[i].rectangle.position.x, self[i].rectangle.position.y, self[i].rectangle.size.width, self[i].title:getHeight() + margens/2)
+
             love.graphics.setColor(255, 255, 255, 200)
             love.graphics.draw(self[i].image.icon, self[i].image.position.x, self[i].image.position.y)
 
-            love.graphics.setColor(255, 255, 255)
-            love.graphics.draw(self[i].title, self[i].position.x, self[i].position.y)
+            love.graphics.setColor(0, 0, 0, 40)
+            love.graphics.draw(self[i].title, self[i].position.x + 2, self[i].position.y + 2, 0, 1, 1, self[i].title:getWidth()/2, self[i].title:getHeight()/2)
+
+            love.graphics.setColor(255, 255, 255, 240)
+            love.graphics.draw(self[i].title, self[i].position.x, self[i].position.y, 0, 1, 1, self[i].title:getWidth()/2, self[i].title:getHeight()/2)
             
 
             if self[i].isLocked then
@@ -273,11 +232,11 @@ function button:show()
                 love.graphics.rectangle('fill', self[i].rectangle.position.x + self[i].rectangle.size.width - 32, self[i].rectangle.position.y, 32, 44)
                 
 
-                love.graphics.setColor(255, 255, 255, 170)
+                love.graphics.setColor(255, 255, 255, 240)
                 love.graphics.rectangle('fill', self[i].rectangle.position.x + self[i].rectangle.size.width - 30, self[i].rectangle.position.y, 30, 40)          
                 
                 love.graphics.setColor(255, 255, 255, 255)
-                love.graphics.draw(ui.locked, self[i].rectangle.position.x + self[i].rectangle.size.width - 23, self[i].rectangle.position.y + 12, 0, 1, 1)
+                love.graphics.draw(ui.image.locked, self[i].rectangle.position.x + self[i].rectangle.size.width - 23, self[i].rectangle.position.y + 12, 0, 1, 1)
             
             end
 
@@ -369,7 +328,7 @@ function button:onClick(x, y, key)
         for i, _ in ipairs(buttons) do
             if buttons[i].title then
                 if x > buttons[i].rectangle.position.x and x < (buttons[i].rectangle.position.x + buttons[i].rectangle.size.width) and y > buttons[i].rectangle.position.y and y < (buttons[i].rectangle.position.y + buttons[i].rectangle.size.height) then
-                    print(buttons[i].label)
+                    -- print(buttons[i].label)
                     buttons[i].action()
                     -- table.insert(buttonsOnClickEx, buttons[i]:onClickEx())
                     -- table.remove( buttons, [] )
