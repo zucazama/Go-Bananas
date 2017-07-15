@@ -34,7 +34,7 @@ function love.update(dt)
         ca:update(dt)
 
         if whatIsVisible.openScreen then
-            ui.sound.abertura:setVolume(0.4)
+            ui.sound.abertura:setVolume(0.2)
             ui.sound.abertura:play()
         end
     else

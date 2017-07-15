@@ -1,9 +1,7 @@
 map = {}
 
 local delay = 0.5
-    -- local delay1 = 10
 
-local plataform = love.graphics.newImage("plataform.png")
 local tilesGround = {}
 local elementsGround = {}
 
@@ -16,11 +14,7 @@ function map.load()
     love.physics.setMeter(64)
     world = love.physics.newWorld(0, 9.81 * 64, true)
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
-    world:setContactFilter(
-        function (a, b) 
-            return true
-        end
-    )
+    world:setContactFilter(function (a, b) return true end)
 
     enemy.create()
 
@@ -32,12 +26,13 @@ function map.load()
     objetos.ground.fixture = love.physics.newFixture(objetos.ground.body, objetos.ground.shape) 
     objetos.ground.body:setUserData("ground")
     objetos.ground.fixture:setUserData("ground")
-    createGround(_G.width, 300, 0, objetos.ground.body:getY() - 150)
-    createElements(0, objetos.ground.body:getY() - 150)
+    
+    map.createGround(_G.width, 300, 0, objetos.ground.body:getY() - 150)
+    map.createElements(0, objetos.ground.body:getY() - 150)
 
 end 
 
-function createGround(width, height, x, y)
+function map.createGround(width, height, x, y)
     local w = math.floor(width/ui.image['box1']:getWidth()) + 3
     local h = math.floor(height/ui.image['box1']:getHeight()) + 3
     local xi = x - 2
@@ -72,13 +67,14 @@ function createGround(width, height, x, y)
     end
 end
 
-function showGround()
+function map.showGround()
     for i = 1, #tilesGround do
         love.graphics.draw(ui.image[tilesGround[i].image], tilesGround[i].position.x, tilesGround[i].position.y)
     end
 end
 
-function createElements(x, y)
+function map.createElements(x, y)
+    -- Gera os objetos que devem está a cima do chão
     local treeRandom = math.random(4)
 
     for i = 1, treeRandom do
@@ -103,17 +99,15 @@ function createElements(x, y)
     })
 end
     
-function showElements()
+function map.showElements()
     for i = 1, #elementsGround do
         love.graphics.draw(ui.image[elementsGround[i].image], elementsGround[i].position.x, elementsGround[i].position.y)
     end
 end
 
 
-
-
 function map.update(dt)
-    world:update(dt) --this puts the world into motion
+    world:update(dt)
     life.update(dt)
 
     do
@@ -121,6 +115,7 @@ function map.update(dt)
             enemy.new()
             delay = 0.7
         end
+
         delay = delay - dt
     end
 
@@ -130,8 +125,8 @@ end
 function map.show()
     love.graphics.setColor(255, 255, 255, 255)
     love.graphics.draw(ui.image.background, 0, 0, 0, 0.2, 0.2)
-    showGround()
-    showElements()
+    map.showGround()
+    map.showElements()
 
 --[[    
     if (love.physics.getDistance(objetos.steve.fixture, objetos.ground.fixture)) > 400 then 
@@ -166,11 +161,8 @@ function map.mousepressed(x, y, key)
 end
 
 function beginContact(a, b, coll)
-    -- x, y = coll:getNormal()
-    -- bodyContactA, bodyContactB = coll:getFixtures()
-    
     enemy.collider(a, b)
- end
+end
  
 function endContact(a, b, coll)
 end

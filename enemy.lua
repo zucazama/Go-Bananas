@@ -13,7 +13,7 @@ local typeFruits = {'orange', 'pineapple' , 'tomato', 'apple', 'lemon'}
 local imagens = {
         {
         -- Fruits
-        love.graphics.newImage('box.png'),
+        love.graphics.newImage("assets/png/fruitsIcons/@64px/tomato.png" ),
         -- love.graphics.newImage('assets/png/orange.png'),
         -- love.graphics.newImage('assets/png/tomato.png'),
         -- love.graphics.newImage('assets/png/watermelon.png'),

@@ -141,9 +141,6 @@ end
 
 function score.show()
     for i, _ in pairs(scoreButton) do
-        -- love.graphics.setColor(0, 0, 0, 30)
-        -- love.graphics.rectangle("fill", scoreButton[i].box.position.x, scoreButton[i].box.position.y, scoreButton[i].box.size.width, scoreButton[i].box.size.height)
-
         love.graphics.setColor(0, 0, 0, 20)
         love.graphics.rectangle("fill", scoreButton[i]['score'].box.position.x - 2, scoreButton[i]['score'].box.position.y, scoreButton[i]['type'].box.size.width + scoreButton[i]['score'].box.size.width, scoreButton[i]['type'].box.size.height)
 
@@ -151,7 +148,6 @@ function score.show()
         love.graphics.setColor(0, 0, 0, 0)
         love.graphics.rectangle("fill", scoreButton[i]['type'].box.position.x + 1, scoreButton[i]['type'].box.position.y, scoreButton[i]['type'].box.size.width - 2, scoreButton[i]['type'].box.size.height)
         
----[[        if scoreButton[i].icon then
         love.graphics.setColor(255, 255, 255, 255)
         love.graphics.draw(scoreButton[i]['type'].image.icon, scoreButton[i]['type'].image.position.x, scoreButton[i]['type'].image.position.y)
 
@@ -159,16 +155,13 @@ function score.show()
         love.graphics.setColor(button.setColor("red"))
         love.graphics.rectangle("fill", scoreButton[i]['score'].box.position.x, scoreButton[i]['score'].box.position.y, scoreButton[i]['score'].box.size.width, scoreButton[i]['score'].box.size.height)
 
-
         love.graphics.setColor(button.setColor("black%20"))
         love.graphics.rectangle("fill", scoreButton[i]['type'].label.box.position.x - 2, scoreButton[i]['type'].label.box.position.y, scoreButton[i]['type'].label.box.size.width + 2, scoreButton[i]['type'].label.box.size.height + 2)
 
 
         love.graphics.setColor(button.setColor("white"))
         love.graphics.rectangle("fill", scoreButton[i]['type'].label.box.position.x, scoreButton[i]['type'].label.box.position.y, scoreButton[i]['type'].label.box.size.width, scoreButton[i]['type'].label.box.size.height)
-    
---]]
-        -- if scoreButton[i].label then
+      
         love.graphics.setColor(0, 0, 0, 20)
         love.graphics.draw(scoreButton[i]['score'].label.text,  scoreButton[i]['score'].label.position.x + 2, scoreButton[i]['score'].label.position.y + 2)
 
@@ -179,19 +172,11 @@ function score.show()
         love.graphics.setColor(0, 0, 0, 240)
         love.graphics.draw(scoreButton[i]['type'].label.text,  scoreButton[i]['type'].label.position.x, scoreButton[i]['type'].label.position.y)
 
-        -- end
---[[
-        if scoreButton[i].select then
-            love.graphics.setColor(0, 0, 0, 200)
-            love.graphics.rectangle("line", scoreButton[i].box.position.x, scoreButton[i].box.position.y, scoreButton[i].box.size.width, scoreButton[i].box.size.height)
-        end]]
     end
 end
 
 function score.findValue(value)
     for i, v in ipairs(typeFruits_availableForChoose) do
-        if v == value then table.remove(typeFruits_availableForChoose, i) 
-            -- print("encontrei", v)
-        end
+        if v == value then table.remove(typeFruits_availableForChoose, i) end
     end
 end
