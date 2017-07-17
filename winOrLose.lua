@@ -26,6 +26,18 @@ frases = {
 
 local chooseFrasesNumber = {}
 
+
+function win.isWin()
+    chooseFrasesNumber = {}
+    whatIsVisible.menuButtons = false;
+    whatIsVisible.score = false
+    whatIsVisible.start = true
+    whatIsVisible.winOrLose = true
+    whatIsVisible.userBar = false
+    chooseFrases = winOrLose.createFrasesForShow(winOrLose.chooseFrase('win', math.random(3)))
+    ui.sound.win:play()
+end
+
 function lose.isLose()
     chooseFrasesNumber = {}
     whatIsVisible.menuButtons = false;
@@ -33,11 +45,26 @@ function lose.isLose()
     whatIsVisible.start = true
     whatIsVisible.winOrLose = true
     whatIsVisible.userBar = false
-    chooseFrases = lose.createFrasesForShow(lose.chooseFrase('lose', 2))
+    chooseFrases = winOrLose.createFrasesForShow(winOrLose.chooseFrase('lose', 2))
     ui.sound.lose:play()
 end
    
 
+function winOrLose.createFrasesForShow(...)
+    local label = {}
+
+    for _, v in ipairs{...} do
+        table.insert(label, {
+            ['text'] = v,
+            ['position'] = {
+                ['x'] = _G.width/2,
+                ['y'] = #label > 0 and label[#label].position.y + label[#label].text:getHeight() + 10 or 100,
+            }
+        })
+    end
+
+    return label
+end
 
 function winOrLose.waysToWinOrLose()
 
@@ -109,33 +136,16 @@ function winOrLose.show(frases)
     end
 end
 
-function lose.createFrasesForShow(...)
-    local label = {}
 
-    for _, v in ipairs{...} do
-        table.insert(label, {
-            ['text'] = v,
-            ['position'] = {
-                ['x'] = _G.width/2,
-                ['y'] = #label > 0 and label[#label].position.y + label[#label].text:getHeight() + 10 or 100,
-            }
-        })
-    end
-
-    return label
-end
-
-function lose.chooseFrase(type, n)
+function winOrLose.chooseFrase(type, n)
     math.randomseed(tonumber(os.date("%S")) * os.clock())
     local a = false
     local choose = math.random(#frases[type])
 
     for _, v in ipairs(chooseFrasesNumber) do
-        -- print("Tamanho de frasesNumber: ", #chooseFrasesNumber)
         if v == choose then
             a = true
-            -- print("entrou aqui por acaso", table.unpack(chooseFrasesNumber))
-            return lose.chooseFrase(type, n)
+            return winOrLose.chooseFrase(type, n)
         end
     end
 
@@ -143,40 +153,11 @@ function lose.chooseFrase(type, n)
         if n == 1 then return frases[type][choose]
         else
             table.insert(chooseFrasesNumber, choose)
-            return frases[type][choose], lose.chooseFrase(type, n - 1)
+            return frases[type][choose], winOrLose.chooseFrase(type, n - 1)
         end
     end
 end
 
-function win.isWin()
-    chooseFrasesNumber = {}
-    whatIsVisible.menuButtons = false;
-    whatIsVisible.score = false
-    whatIsVisible.start = true
-    whatIsVisible.winOrLose = true
-    whatIsVisible.userBar = false
-    chooseFrases = lose.createFrasesForShow(lose.chooseFrase('win', math.random(3)))
-    ui.sound.win:play()
-end
-
---[[ function win.waysToWin()
-    local sumNumberAvailable = 0
-    local sumNumberRequied = 0
-    local a = false
-
-
-    for i, v in ipairs(scoreButton) do
-        sumNumberAvailable =  sumNumberAvailable + scoreButton[i]['type'].label.number
-        sumNumberRequied = sumNumberRequied + scoreButton[i]['score'].label.number        
-    
-        if scoreButton[i]['type'].label.number == 0 and boxFruitsInContact[scoreButton[i]['type'].type] == 0 then
-            a = not a and true
-        end
- 
-    end
-
-
-end ]]
 
 function winOrLose:newButton(text, icon, func, color,  n)
 

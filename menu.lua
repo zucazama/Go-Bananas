@@ -1,17 +1,14 @@
-
 require "buttons"
 require "winOrLose"
-require "scoreGame"
+require "score"
 
--- Variáveis Globais
 menu = {}
 
 
-
-function menu:load()
+function menu.load()
     
     buttons:new('INÍCIO', 'left', function() whatIsVisible.menuButtons = false; whatIsVisible.start = true; whatIsVisible.score = true; --[[steve.load()]] end, 'orange', ui.image.play, false)
-    buttons:new("RECOMEÇAR", "left", function() restart() end, "blue", ui.image.refresh, false)
+    buttons:new("RECOMEÇAR", "left", function() enemy.restart() end, "blue", ui.image.refresh, false)
     buttons:new('SAIR', 'left', 
         function() 
             whatIsVisible.menu = false
@@ -21,7 +18,7 @@ function menu:load()
     -- buttons:new('Personalizar', 'left', function() menu.appear(true, 0.1) end, "green", nil, true)
     -- button:new('Controles', 'left', function() return true end)
 
-    winOrLoseButtons:newButton("RECOMEÇAR", ui.image.refresh, function() restart(); whatIsVisible.winOrLose = false; whatIsVisible.score = true; whatIsVisible.userBar = true; end, "blue", 2)
+    winOrLoseButtons:newButton("RECOMEÇAR", ui.image.refresh, function() enemy.restart(); whatIsVisible.winOrLose = false; whatIsVisible.score = true; whatIsVisible.userBar = true; end, "blue", 2)
     winOrLoseButtons:newButton("SAIR", ui.image.stop, function() whatIsVisible.menu = false;  love.event.quit() end, "red", 2)
 
     userBarBotton:new(nil, ui.image.monkey, 0, 0, nil, function() return end)
@@ -40,7 +37,7 @@ function menu:load()
 
 end
 
-function menu:update(dt)
+function menu.update(dt)
 
     if whatIsVisible.menuButtons then
         button:houver(love.mouse.getPosition())
@@ -62,7 +59,7 @@ function menu:update(dt)
 
 end
 
-function menu:mousepressed(x, y, key)
+function menu.mousepressed(x, y, key)
     if whatIsVisible.userBar then
         userBarBotton:onClick(x, y)
     end
@@ -74,15 +71,15 @@ function menu:mousepressed(x, y, key)
     -- if whatIsVisible.start then weapons.new(choose or "axe", x, y) end
 end
 
-function menu:scene(dt)
+function menu.scene(dt)
 end
 
-function menu:keypressed(key)
+function menu.keypressed(key)
 end
 
-function menu:show()
+function menu.show()
     -- A ordem Importa!
-    life.show()
+    overlap.show()
 
     
     if whatIsVisible.userBar then

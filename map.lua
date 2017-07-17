@@ -6,7 +6,7 @@ local tilesGround = {}
 local elementsGround = {}
 
 function map.load()
-    require "life"
+    require "overlap"
     -- require "saveGame"
     -- if not love.filesystem.exists("save.lua") then saveGame.createSave(); end
     
@@ -15,8 +15,6 @@ function map.load()
     world = love.physics.newWorld(0, 9.81 * 64, true)
     world:setCallbacks(beginContact, endContact, preSolve, postSolve)
     world:setContactFilter(function (a, b) return true end)
-
-    enemy.create()
 
 
     objetos = {}
@@ -30,6 +28,8 @@ function map.load()
     map.createGround(_G.width, 300, 0, objetos.ground.body:getY() - 150)
     map.createElements(0, objetos.ground.body:getY() - 150)
 
+    -- enemy.create()
+    enemy.load()
 end 
 
 function map.createGround(width, height, x, y)
@@ -108,12 +108,12 @@ end
 
 function map.update(dt)
     world:update(dt)
-    life.update(dt)
+    overlap.update(dt)
 
     do
         if delay <= 0 then
             enemy.new()
-            delay = 0.7
+            delay = 0.9
         end
 
         delay = delay - dt
@@ -128,32 +128,15 @@ function map.show()
     map.showGround()
     map.showElements()
 
---[[    
-    if (love.physics.getDistance(objetos.steve.fixture, objetos.ground.fixture)) > 400 then 
-        local x, y  = objetos.ground.body:getX() - love.graphics.getWidth()/2, objetos.ground.body:getY() - love.graphics.getHeight() + 200 
-        world:translateOrigin(x, y)
-        
-        -- objetos.steve.body:setPosition(love.graphics.getWidth()/2, love.graphics.getHeight()/2)
-    else
-          world:translateOrigin(objetos.steve.body:getX() - love.graphics.getWidth()/2, objetos.steve.body:getY() - love.graphics.getHeight()/2 - 200)
-    end
---]]
-
-    love.graphics.setColor(72, 160, 14) -- set the drawing color to green for the ground
+    love.graphics.setColor(72, 160, 14)
     love.graphics.polygon("line", objetos.ground.body:getWorldPoints(objetos.ground.shape:getPoints())) -- draw a "filled in" polygon using the ground's coordinates
   
-
     enemys:show()
     
 end
 
 
 function map.keypressed(key) 
-    if key == 'espace' then
-        if not whatIsVisible.start then whatIsVisible.menuButtons = true; whatIsVisible.start = false
-        elseif whatIsVisible.start then whatIsVisible.menuButtons = false; whatIsVisible.start = true
-        end
-    end
 end
 
 function map.mousepressed(x, y, key)
